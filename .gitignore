@@ -1,0 +1,7 @@
+/dist
+/node_modules
+.env
+cgpu.config.json
+colab-cli.config.json
+client_secret_*.json
+.env

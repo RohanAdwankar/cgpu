@@ -1,0 +1,45 @@
+{
+  "name": "cgpu",
+  "version": "0.1.0",
+  "description": "Free cloud GPUs for learning CUDA",
+  "type": "module",
+  "bin": {
+    "cgpu": "./dist/src/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "tsx src/index.ts",
+    "diagnostics": "tsx src/index.ts status",
+    "setup-config": "tsx scripts/setup-config.ts",
+    "test": "vitest run",
+    "lint": "tsc --noEmit",
+    "start": "node dist/src/index.js"
+  },
+  "keywords": [
+    "colab",
+    "gpu",
+    "cuda",
+    "cli"
+  ],
+  "author": "Rohan Adwankar",
+  "license": "Apache-2.0",
+  "dependencies": {
+    "chalk": "5.3.0",
+    "commander": "12.1.0",
+    "dotenv": "16.4.5",
+    "google-auth-library": "10.4.1",
+    "node-fetch": "3.3.2",
+    "open": "9.1.0",
+    "ora": "8.0.1",
+    "ws": "8.16.0",
+    "zod": "3.23.8"
+  },
+  "devDependencies": {
+    "@types/node": "20.11.25",
+    "@types/ws": "8.5.10",
+    "ts-node": "10.9.2",
+    "tsx": "4.0.0",
+    "typescript": "5.4.3",
+    "vitest": "1.2.2"
+  }
+}
