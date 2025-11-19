@@ -1,6 +1,6 @@
 CLI enabling free cloud GPU access in your terminal for learning CUDA.
 
-![nvcc demo](demo.gif)
+![nvcc demo](docs/demo.gif)
 
 ```bash
 # Connect to a cloud GPU instance

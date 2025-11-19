@@ -1,6 +1,10 @@
 {
   "name": "cgpu",
-  "version": "0.1.0",
+  "version": "0.1.1",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/RohanAdwankar/cgpu.git"
+  },
   "description": "Free cloud GPUs for learning CUDA",
   "type": "module",
   "bin": {
