@@ -3,29 +3,24 @@ import fs from "node:fs/promises";
 import path from "node:path";
 import os from "node:os";
 import { createRequire } from "node:module";
-import readline from "node:readline/promises";
-import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
-
-interface CliConfig {
-  clientId: string;
-  clientSecret: string;
-  colabApiDomain: string;
-  colabGapiDomain: string;
-}
+import {
+  DEFAULT_COLAB_API_DOMAIN,
+  DEFAULT_COLAB_GAPI_DOMAIN,
+  getDefaultConfigPath,
+  runInteractiveOAuthWizard,
+  type ConfigFile,
+  writeConfigFile,
+} from "../src/config.js";
 
 interface ExtensionConfigResult {
-  config: CliConfig;
+  config: ConfigFile;
   source: string;
 }
 
 const PROJECT_ROOT = path.resolve(
   path.join(path.dirname(fileURLToPath(import.meta.url)), ".."),
 );
-const LOCAL_CONFIG_PATH = path.join(PROJECT_ROOT, "cgpu.config.json");
-const LEGACY_LOCAL_CONFIG_PATH = path.join(PROJECT_ROOT, "colab-cli.config.json");
-const GLOBAL_CONFIG_PATH = path.join(os.homedir(), ".config", "cgpu", "config.json");
-const LEGACY_GLOBAL_CONFIG_PATH = path.join(os.homedir(), ".config", "colab-cli", "config.json");
 
 const EXTENSION_DIRS = dedupe([
   path.join(os.homedir(), ".vscode", "extensions"),
@@ -37,15 +32,21 @@ const EXTENSION_DIRS = dedupe([
 ]);
 
 const DEFAULT_DOMAINS = {
-  colabApiDomain: "https://colab.research.google.com",
-  colabGapiDomain: "https://colab.googleapis.com",
+  colabApiDomain: DEFAULT_COLAB_API_DOMAIN,
+  colabGapiDomain: DEFAULT_COLAB_GAPI_DOMAIN,
 };
 
 async function main() {
   try {
     const extensionConfig = await tryReadFromVsCodeExtension();
-    const config = extensionConfig?.config ?? (await promptForConfig());
-    await writeConfig(config, extensionConfig?.source);
+    if (extensionConfig) {
+      await writeConfigFile(extensionConfig.config);
+      console.log(`✅ Saved credentials to ${getDefaultConfigPath()}`);
+      console.log(`Credentials were copied from ${extensionConfig.source}`);
+      return;
+    }
+    console.log("No existing Colab credentials found. Launching the guided setup...\n");
+    await runInteractiveOAuthWizard();
   } catch (err) {
     console.error("Failed to set up configuration:");
     console.error(err instanceof Error ? err.message : err);
@@ -78,7 +79,7 @@ async function tryReadFromVsCodeExtension(): Promise<ExtensionConfigResult | und
         if (!rawConfig?.ClientId || !rawConfig?.ClientNotSoSecret) {
           continue;
         }
-        const config: CliConfig = {
+  const config: ConfigFile = {
           clientId: rawConfig.ClientId,
           clientSecret: rawConfig.ClientNotSoSecret,
           colabApiDomain: rawConfig.ColabApiDomain ?? DEFAULT_DOMAINS.colabApiDomain,
@@ -93,60 +94,6 @@ async function tryReadFromVsCodeExtension(): Promise<ExtensionConfigResult | und
   }
   console.log("ℹ️ Could not find a local installation of googlecolab.colab-vscode.");
   return undefined;
-}
-
-async function promptForConfig(): Promise<CliConfig> {
-  console.log("Please enter your Google OAuth credentials.");
-  console.log("You can copy these from the VS Code extension or use your own OAuth client.");
-  const rl = readline.createInterface({ input, output });
-  const clientId = (await rl.question("Client ID: ")).trim();
-  const clientSecret = (await rl.question("Client secret: ")).trim();
-  const colabApiDomain = (
-    await rl.question(`Colab API domain [${DEFAULT_DOMAINS.colabApiDomain}]: `)
-  ).trim() || DEFAULT_DOMAINS.colabApiDomain;
-  const colabGapiDomain = (
-    await rl.question(`Colab GAPI domain [${DEFAULT_DOMAINS.colabGapiDomain}]: `)
-  ).trim() || DEFAULT_DOMAINS.colabGapiDomain;
-  rl.close();
-  if (!clientId || !clientSecret) {
-    throw new Error("Client ID and secret are required.");
-  }
-  return { clientId, clientSecret, colabApiDomain, colabGapiDomain };
-}
-
-async function writeConfig(config: CliConfig, source?: string): Promise<void> {
-  await fs.writeFile(
-    LOCAL_CONFIG_PATH,
-    JSON.stringify(config, null, 2) + "\n",
-    "utf-8",
-  );
-  await fs.mkdir(path.dirname(GLOBAL_CONFIG_PATH), { recursive: true });
-  await fs.writeFile(
-    GLOBAL_CONFIG_PATH,
-    JSON.stringify(config, null, 2) + "\n",
-    "utf-8",
-  );
-  console.log(`✅ Wrote ${LOCAL_CONFIG_PATH}`);
-  console.log(`✅ Wrote ${GLOBAL_CONFIG_PATH}`);
-  await syncLegacyConfig(config);
-  if (source) {
-    console.log(`Credentials were copied from ${source}`);
-  }
-}
-
-async function syncLegacyConfig(config: CliConfig): Promise<void> {
-  const targets = [
-    LEGACY_LOCAL_CONFIG_PATH,
-    LEGACY_GLOBAL_CONFIG_PATH,
-  ];
-  for (const target of targets) {
-    if (!(await pathExists(target))) {
-      continue;
-    }
-    await fs.mkdir(path.dirname(target), { recursive: true });
-    await fs.writeFile(target, JSON.stringify(config, null, 2) + "\n", "utf-8");
-    console.log(`ℹ️ Updated legacy config at ${target}`);
-  }
 }
 
 async function pathExists(p: string): Promise<boolean> {

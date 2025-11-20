@@ -55,7 +55,7 @@ async function createApp(configPath?: string) {
 const program = new Command();
 program
   .name("cgpu")
-  .description("Experimental Colab GPU CLI")
+  .description("Cloud GPU CLI")
   .option("-c, --config <path>", "path to config file")
   .option("--force-login", "ignore cached session");
 
