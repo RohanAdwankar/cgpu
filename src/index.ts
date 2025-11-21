@@ -13,6 +13,7 @@ import { RemoteCommandRunner } from "./runtime/remote-command-runner.js";
 import { buildPosixCommand } from "./utils/shell.js";
 import { Variant } from "./colab/api.js";
 import { uploadFileToRuntime } from "./runtime/file-transfer.js";
+import { startServeServer } from "./serve/server.js";
 
 interface GlobalOptions {
   config?: string;
@@ -204,6 +205,30 @@ program
     await withApp(options, async ({ auth }) => {
       await auth.signOut();
       console.log(chalk.yellow("Signed out and cleared session cache."));
+    });
+  });
+
+program
+  .command("serve")
+  .description("Start an OpenAI-compatible API server backed by Google Gemini")
+  .option("-p, --port <number>", "Port to listen on", "8080")
+  .option("-H, --host <string>", "Host to listen on", "127.0.0.1")
+  .option("--gemini-bin <path>", "Path to the gemini executable", "gemini")
+  .option("--default-model <model>", "Default model to use if not specified", "gpt-4.1")
+  .option("--timeout <ms>", "Request timeout in milliseconds", "120000")
+  .option("--workspace-dir <path>", "Directory prefix for temporary workspaces")
+  .action(async (options) => {
+    const port = parseInt(options.port, 10);
+    const timeout = parseInt(options.timeout, 10);
+
+    await startServeServer({
+      port,
+      host: options.host,
+      geminiBin: options.geminiBin,
+      defaultModel: options.defaultModel,
+      requestTimeoutMs: timeout,
+      workspaceDirPrefix: options.workspaceDir,
+      logger: console,
     });
   });
 

@@ -3,3 +3,4 @@
 .env
 client_secret_*.json
 .env
+/gemini-cli

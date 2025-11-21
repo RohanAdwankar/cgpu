@@ -12,6 +12,20 @@ cgpu connect
 cgpu run nvidia-smi 
 ```
 
+### Serve Gemini as OpenAI-compatible API
+You can start a local server that proxies requests to Google Gemini using the `cgpu serve` command. This allows you to use Gemini with tools that expect an OpenAI-compatible API.
+
+```bash
+# Start the server on port 8080
+cgpu serve
+
+# Specify port and model
+cgpu serve --port 3000 --default-model gemini-1.5-pro
+```
+
+### Vision 
+```
+
 https://github.com/user-attachments/assets/93158031-24fd-4a63-a4cb-1164bea383c3
 
 ### Vision
