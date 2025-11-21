@@ -50,12 +50,11 @@ export async function runGeminiCli({
   } satisfies NodeJS.ProcessEnv;
 
   const args = [
-    "--prompt",
-    prompt,
     "--output-format",
     "json",
     "--model",
     model,
+    prompt,
   ];
 
   const stdoutChunks: Uint8Array[] = [];
@@ -91,10 +90,14 @@ export async function runGeminiCli({
     const stderr = Buffer.concat(stderrChunks).toString("utf8").trim();
 
     if (exitCode !== 0) {
+      let message = stderr || `Gemini CLI exited with code ${exitCode}`;
+      // Remove common noise from stderr
+      message = message.replace(/^Loaded cached credentials\.\n?/gm, "").trim();
+
       throw new HttpError(
         502,
         "gemini_cli_error",
-        stderr || `Gemini CLI exited with code ${exitCode}`,
+        message,
         stdout,
       );
     }

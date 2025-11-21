@@ -14,6 +14,7 @@ import { buildPosixCommand } from "./utils/shell.js";
 import { Variant } from "./colab/api.js";
 import { uploadFileToRuntime } from "./runtime/file-transfer.js";
 import { startServeServer } from "./serve/server.js";
+import { KNOWN_GEMINI_MODELS } from "./serve/utils.js";
 
 interface GlobalOptions {
   config?: string;
@@ -217,7 +218,16 @@ program
   .option("--default-model <model>", "Default model to use if not specified", "gpt-4.1")
   .option("--timeout <ms>", "Request timeout in milliseconds", "120000")
   .option("--workspace-dir <path>", "Directory prefix for temporary workspaces")
+  .option("--list-models", "List available Gemini models and exit")
   .action(async (options) => {
+    if (options.listModels) {
+      console.log("Available Gemini models:");
+      for (const model of KNOWN_GEMINI_MODELS) {
+        console.log(`  - ${model}`);
+      }
+      return;
+    }
+
     const port = parseInt(options.port, 10);
     const timeout = parseInt(options.timeout, 10);
 

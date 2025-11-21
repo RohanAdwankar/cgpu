@@ -20,7 +20,7 @@ You can start a local server that proxies requests to Google Gemini using the `c
 cgpu serve
 
 # Specify port and model
-cgpu serve --port 3000 --default-model gemini-1.5-pro
+cgpu serve --port 3000 --default-model gemini-2.0-flash
 ```
 
 ### Vision 

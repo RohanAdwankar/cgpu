@@ -2,18 +2,13 @@ import { inspect } from "node:util";
 
 export const DEFAULT_GEMINI_MODEL = "gemini-2.0-flash";
 
-const MODEL_MAPPINGS: Record<string, string> = {
-  "gpt-4.1": "gemini-2.0-flash",
-  "gpt-4.1-mini": "gemini-1.5-flash",
-  "gpt-4o": "gemini-2.0-flash",
-  "gpt-4o-mini": "gemini-1.5-flash",
-  "gpt-4o-realtime-preview": "gemini-2.0-flash",
-  "gpt-4.5-preview": "gemini-2.0-flash-thinking",
-  "gpt-5": "gemini-2.5-pro-exp",
-  "gpt-5-mini": "gemini-2.0-flash",
-  "gpt-3.5-turbo": "gemini-1.5-flash",
-  "gpt-3.5-turbo-instruct": "gemini-1.0-pro",
-};
+export const KNOWN_GEMINI_MODELS = [
+  "gemini-2.0-flash",
+  "gemini-2.0-flash-thinking-exp",
+  "gemini-1.5-flash",
+  "gemini-1.5-pro",
+  "gemini-1.0-pro",
+];
 
 export class HttpError extends Error {
   constructor(
@@ -33,14 +28,7 @@ export function mapModelIdentifier(
 ): { requested: string; resolved: string; mappedFrom: string | null } {
   const fallback = defaultModel.trim();
   const requested = (requestedModel ?? "").trim() || fallback;
-  const lowered = requested.toLowerCase();
-  if (requested.startsWith("gemini")) {
-    return { requested, resolved: requested, mappedFrom: null };
-  }
-  const mapped = MODEL_MAPPINGS[lowered];
-  if (mapped) {
-    return { requested, resolved: mapped, mappedFrom: requested };
-  }
+  
   return { requested, resolved: requested, mappedFrom: null };
 }
 
