@@ -1,0 +1,9 @@
+[project]
+name = "cgpu-serve-example-app"
+version = "0.1.0"
+description = "Example app to show how cgpu serve"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "openai>=2.8.1",
+]
