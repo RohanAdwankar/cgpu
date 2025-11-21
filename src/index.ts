@@ -215,7 +215,7 @@ program
   .option("-p, --port <number>", "Port to listen on", "8080")
   .option("-H, --host <string>", "Host to listen on", "127.0.0.1")
   .option("--gemini-bin <path>", "Path to the gemini executable", "gemini")
-  .option("--default-model <model>", "Default model to use if not specified", "gpt-4.1")
+  .option("--default-model <model>", "Default model to use if not specified", "gemini-2.0-flash")
   .option("--timeout <ms>", "Request timeout in milliseconds", "120000")
   .option("--workspace-dir <path>", "Directory prefix for temporary workspaces")
   .option("--list-models", "List available Gemini models and exit")

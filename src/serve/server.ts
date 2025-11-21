@@ -1,6 +1,7 @@
 import http, { IncomingMessage, Server, ServerResponse } from "node:http";
 import { URL } from "node:url";
 import {
+  DEFAULT_GEMINI_MODEL,
   HttpError,
   ensureBoolean,
   ensureOptionalNumber,
@@ -83,7 +84,7 @@ export async function startServeServer(options: ServeServerOptions = {}): Promis
     host: options.host ?? DEFAULT_HOST,
     port: options.port ?? DEFAULT_PORT,
     geminiBin: options.geminiBin ?? "gemini",
-    defaultModel: options.defaultModel ?? "gpt-4.1",
+    defaultModel: options.defaultModel ?? DEFAULT_GEMINI_MODEL,
     requestTimeoutMs: options.requestTimeoutMs ?? DEFAULT_TIMEOUT_MS,
     workspaceDirPrefix: options.workspaceDirPrefix,
     maxBodySize: options.maxBodySize ?? DEFAULT_MAX_BODY,
@@ -232,7 +233,7 @@ function normalizeRequest(body: CreateResponseRequestBody, defaultModel: string)
   const instructions = normalizeInstructions(body.instructions);
   const prompt = instructions ? `${instructions}\n\n${userContent}` : userContent;
 
-  const { requested, resolved } = mapModelIdentifier(body.model, defaultModel || "gpt-4.1");
+  const { requested, resolved } = mapModelIdentifier(body.model, defaultModel || DEFAULT_GEMINI_MODEL);
 
   const metadata = sanitizeMetadata(body.metadata);
   const toolChoice = normalizeToolChoice(body.tool_choice);

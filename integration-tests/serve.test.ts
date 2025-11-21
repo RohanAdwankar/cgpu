@@ -48,16 +48,17 @@ console.log(JSON.stringify({
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         input: "Hello",
-        model: "gpt-4.1"
+        model: "gemini-2.0-flash"
       })
     });
 
     expect(response.status).toBe(200);
+    interface ErrorResponse { error: { code: string; message?: string } }
     const data = await response.json() as any;
     expect(data.object).toBe("response");
     expect(data.output_text).toBe("Mock response");
     expect(data.usage.total_tokens).toBe(10);
-    expect(data.model).toBe("gpt-4.1");
+    expect(data.model).toBe("gemini-2.0-flash");
   });
 
   it("should return 400 for missing input", async () => {
@@ -77,7 +78,7 @@ console.log(JSON.stringify({
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        model: "gpt-4.1"
+        model: "gemini-2.0-flash"
       })
     });
 
