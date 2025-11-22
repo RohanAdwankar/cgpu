@@ -22,6 +22,9 @@ cgpu serve
 # Specify port and model
 cgpu serve --port 3000 --default-model gemini-2.0-flash
 ```
+For an example of using this with the OpenAI client, check out [python_example](python_example/main.py).
+This requires you have the [gemini cli](https://github.com/google-gemini/gemini-cli) installed.
+
 
 ### Vision 
 ```
