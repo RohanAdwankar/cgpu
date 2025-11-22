@@ -1,4 +1,4 @@
-### CLI enabling free cloud GPU access in your terminal for learning CUDA
+### CLI enabling Free Cloud GPU access in your terminal for learning CUDA
 
 ![nvcc demo](docs/demo.gif)
 
@@ -12,7 +12,7 @@ cgpu connect
 cgpu run nvidia-smi 
 ```
 
-### Serve Gemini as OpenAI-compatible API
+### Serve Gemini for Free as OpenAI-compatible API
 You can start a local server that proxies requests to Google Gemini using the `cgpu serve` command. This allows you to use Gemini with tools that expect an OpenAI-compatible API.
 
 ```bash
